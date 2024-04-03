@@ -1,10 +1,7 @@
 #pragma once
 
-#include <vector>
-#include <string>
 #include <filesystem>
 
-#include "elements/star.hpp"
 #include "glob.hpp"
 #include "match.hpp"
 

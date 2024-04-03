@@ -1,12 +1,18 @@
 cmake_minimum_required(VERSION 3.29.0)
 project(u8glob VERSION 0.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (MSVC)
+    add_compile_options(/W4 /WX /utf-8)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 # u8glob library configuration
 find_package(utf8cpp REQUIRED)
-include_directories(u8glob include)
+include_directories(include)
 add_library(u8glob 
     src/u8glob/elements/range.cpp
     src/u8glob/glob.cpp

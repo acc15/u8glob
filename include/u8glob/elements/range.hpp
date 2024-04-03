@@ -2,6 +2,7 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 #include <utf8.h>
 
 namespace u8glob {
