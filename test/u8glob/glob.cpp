@@ -38,11 +38,11 @@ void test_parse(std::string_view expr, const glob::element_vector& expected) {
 }
 
 TEST_CASE("glob: not matches", "[glob][match]") {
-    REQUIRE_FALSE( glob { star{},  "abc"}.matches("xaaabcaabcx") );
+    REQUIRE_FALSE( glob { star{},  "abc" }.matches("xaaabcaabcx") );
 }
 
 TEST_CASE("glob: match last sequence", "[glob][match]") {
-    REQUIRE( glob { star{}, "aa", }.matches("xxxxaaa") );
+    REQUIRE( glob { star{}, "aa" }.matches("xxxxaaa") );
 }
 
 TEST_CASE("glob: match last any", "[glob][match]") {
@@ -77,22 +77,22 @@ TEST_CASE("glob: match extension", "[glob][match]") {
 }
 
 TEST_CASE("glob: match performance", "[glob][match][!benchmark]") {
-    for (size_t iter = 0; iter < 40; iter++) {
+    for (size_t star_count = 0; star_count < 40; star_count++) {
 
         glob g;
-        for (size_t i = 0; i < iter; i++) {
+        for (size_t i = 0; i < star_count; i++) {
             g.elements.push_back("a");
             g.elements.push_back(star{});
         }
         g.elements.push_back("b");
 
-        std::string str(iter, 'a');
+        std::string str(star_count, 'a');
 
         const auto t_start = std::chrono::high_resolution_clock::now();
         CHECK_FALSE( g.matches(str) );
         const auto t_end = std::chrono::high_resolution_clock::now();
 
-        std::cout << iter <<  " stars: took "
+        std::cout << star_count <<  " stars: took "
             << std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_start).count() 
             << "ns" << std::endl;
     
@@ -106,11 +106,11 @@ TEST_CASE("glob: parse general", "[glob][parse]") {
         "b",
         any{},
         "c",
-        range{{{U'a', U'b'}}},
+        range{ {{U'a', U'b'}} },
         "d!e",
-        range{{{U'a', U'b'}}, true},
+        range{ {{U'a', U'b'}}, true},
         "x",
-        range{{{U'a', U'z'}, {U'A', U'Z'}}}
+        range{ {{U'a', U'z'}, {U'A', U'Z'}} }
     });
 }
 
