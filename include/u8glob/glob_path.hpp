@@ -16,7 +16,10 @@ public:
 
     element_vector elements;
 
-    glob_path(const std::initializer_list<element>& elements_init);
+    glob_path() = default;
+    glob_path(const element_vector& elements);
+    glob_path(element_vector&& elements);
+    glob_path(const std::initializer_list<element>& elements);
 
     template<std::ranges::range PathLike>
     bool matches(const PathLike& path) {

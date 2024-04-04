@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <variant>
+#include <optional>
 
 #include <utf8.h>
 
@@ -13,7 +14,7 @@ namespace u8glob {
 
     class glob {
     public:
-        using element = std::variant<std::string, range, any, star>;
+        using element = std::variant<star, any, std::string, range>;
         using element_vector = std::vector<element>;
 
         element_vector elements;
@@ -23,10 +24,13 @@ namespace u8glob {
         glob(element_vector&& v);
         glob(const std::initializer_list<element>& v);
 
+        bool empty() const;
         bool matches(std::string_view sv) const;
         
         void stringify(std::string& result) const;
         std::string stringify() const;
+
+        std::optional<std::string> as_single_string() const;
 
         static void escape(std::string_view str, std::string& result);
         static std::string escape(std::string_view str);

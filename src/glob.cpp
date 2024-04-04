@@ -41,6 +41,23 @@ bool glob::matches(std::string_view sv) const {
     return glob_match<match_visitor>(elements, sv);
 }
 
+bool glob::empty() const {
+    return elements.empty();
+}
+
+std::optional<std::string> glob::as_single_string() const {
+    switch (elements.size()) {
+        case 0: return std::string();
+        case 1: 
+            const auto& single = elements.front();
+            if (std::holds_alternative<std::string>(single)) {
+                return std::get<std::string>(single);
+            }
+            break;
+    }
+    return std::nullopt;
+}
+
 glob glob::parse(std::string_view str) {
     glob result;
     result.parse_self(str);
