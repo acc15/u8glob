@@ -37,6 +37,16 @@ void test_parse(std::string_view expr, const glob::element_vector& expected) {
     test_elements(glob::parse(expr).elements, expected);
 }
 
+glob make_star_glob(size_t star_count) {
+    glob g;
+    for (size_t i = 0; i < star_count; i++) {
+        g.elements.push_back("a");
+        g.elements.push_back(star{});
+    }
+    g.elements.push_back("b");
+    return g;
+}
+
 TEST_CASE("glob: not matches", "[glob][match]") {
     REQUIRE_FALSE( glob { star{},  "abc" }.matches("xaaabcaabcx") );
 }
@@ -74,29 +84,6 @@ TEST_CASE("glob: match extension", "[glob][match]") {
     REQUIRE(ext_glob.matches(".txt"));
     REQUIRE(ext_glob.matches("Hello.txt"));
     REQUIRE_FALSE(ext_glob.matches("Hello.zip"));
-}
-
-TEST_CASE("glob: match performance", "[glob][match][!benchmark]") {
-    for (size_t star_count = 0; star_count < 40; star_count++) {
-
-        glob g;
-        for (size_t i = 0; i < star_count; i++) {
-            g.elements.push_back("a");
-            g.elements.push_back(star{});
-        }
-        g.elements.push_back("b");
-
-        std::string str(star_count, 'a');
-
-        const auto t_start = std::chrono::high_resolution_clock::now();
-        CHECK_FALSE( g.matches(str) );
-        const auto t_end = std::chrono::high_resolution_clock::now();
-
-        std::cout << star_count <<  " stars: took "
-            << std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_start).count() 
-            << "ns" << std::endl;
-    
-    }
 }
 
 TEST_CASE("glob: parse general", "[glob][parse]") {
@@ -162,4 +149,23 @@ TEST_CASE("glob: stringify", "[glob][stringify]") {
         range{ {{U'a', U'c'}}, true },
         "abc*[]?", 
     }.stringify() == "*?[aА-Яа-я][!a-c]abc[*][[][]][?]" );
+}
+
+TEST_CASE("glob: match performance", "[glob][match][!benchmark]") {
+    for (size_t star_count = 0; star_count < 40; star_count++) {
+
+        // TODO strange GCC bug: try to inline this function and build with Release configuration
+        // a lot of - `may be used uninitialized` warnings
+        glob g = make_star_glob(star_count);
+        std::string str(star_count, 'a');
+
+        const auto t_start = std::chrono::high_resolution_clock::now();
+        CHECK_FALSE( g.matches(str) );
+        const auto t_end = std::chrono::high_resolution_clock::now();
+
+        std::cout << star_count <<  " stars: took "
+            << std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_start).count() 
+            << "ns" << std::endl;
+    
+    }
 }
