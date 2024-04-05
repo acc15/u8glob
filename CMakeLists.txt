@@ -22,17 +22,17 @@ set(INC include/u8glob)
 set(SRC src)
 
 add_library(u8glob
-    ${SRC}/elements/range.cpp  
-    ${SRC}/glob.cpp  
+    ${SRC}/elements/range.cpp
+    ${SRC}/glob.cpp
     ${SRC}/glob_path.cpp
 )
 
-target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES 
-    ${INC}/elements/star.hpp 
+target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
+    ${INC}/elements/star.hpp
     ${INC}/elements/any.hpp
-    ${INC}/elements/range.hpp 
-    ${INC}/match.hpp 
-    ${INC}/glob.hpp 
+    ${INC}/elements/range.hpp
+    ${INC}/match.hpp
+    ${INC}/glob.hpp
     ${INC}/glob_path.hpp
 )
 
