@@ -1,6 +1,6 @@
-#include "u8glob/glob_path.hpp"
-
 #include <ranges>
+
+#include "u8glob/glob_path.hpp"
 
 namespace u8glob {
 

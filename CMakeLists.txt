@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-  set(U8GLOB_ROOT ON)
+  set(${PROJECT_NAME}_ROOT ON)
 else()
-  set(U8GLOB_ROOT OFF)
+  set(${PROJECT_NAME}_ROOT OFF)
 endif()
 
 if(MSVC)
@@ -17,17 +17,17 @@ else()
 endif()
 
 find_package(utf8cpp REQUIRED)
+add_library(${PROJECT_NAME})
 
-set(INC include/u8glob)
 set(SRC src)
-
-add_library(u8glob
+target_sources(${PROJECT_NAME} PRIVATE 
     ${SRC}/elements/range.cpp
     ${SRC}/glob.cpp
     ${SRC}/glob_path.cpp
 )
 
-target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
+set(INC include/${PROJECT_NAME})
+target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
     ${INC}/elements/star.hpp
     ${INC}/elements/any.hpp
     ${INC}/elements/range.hpp
@@ -36,13 +36,12 @@ target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
     ${INC}/glob_path.hpp
 )
 
-target_link_libraries(u8glob utf8::cpp)
+target_link_libraries(${PROJECT_NAME} utf8::cpp)
 
-include(GNUInstallDirs)
-install(TARGETS u8glob FILE_SET HEADERS)
+add_subdirectory(cmake)
 
-option(U8GLOB_TEST "Build tests" ${U8GLOB_ROOT})
-if(U8GLOB_TEST)
+option(${PROJECT_NAME}_TEST "Build tests" ${${PROJECT_NAME}_ROOT})
+if(${PROJECT_NAME}_TEST)
     add_subdirectory(test)
 endif()
 

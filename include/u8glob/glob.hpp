@@ -4,8 +4,6 @@
 #include <variant>
 #include <optional>
 
-#include <utf8.h>
-
 #include "u8glob/elements/range.hpp"
 #include "u8glob/elements/any.hpp"
 #include "u8glob/elements/star.hpp"

@@ -1,8 +1,10 @@
+#include <utf8/unchecked.h>
+
 #include "u8glob/elements/range.hpp"
 
 namespace u8glob {
 
-void range::add(utf8::utfchar32_t min, utf8::utfchar32_t max) {
+void range::add(char32_t min, char32_t max) {
     if (min > max) {
         std::swap(min, max);
     }
@@ -22,11 +24,11 @@ void range::add(utf8::utfchar32_t min, utf8::utfchar32_t max) {
     }
 }
 
-void range::add(utf8::utfchar32_t v) {
+void range::add(char32_t v) {
     add(v, v);
 }
 
-bool range::contains(utf8::utfchar32_t v) const {
+bool range::contains(char32_t v) const {
     const auto it = map.upper_bound(v);
     const bool in_range = it != map.begin() && v <= std::prev(it)->second;
     return in_range != inverse;
@@ -34,7 +36,7 @@ bool range::contains(utf8::utfchar32_t v) const {
 
 void range::parse(std::string_view::const_iterator& it, std::string_view::const_iterator end) {
     
-    std::optional<utf8::utfchar32_t> last_char = std::nullopt;
+    std::optional<char32_t> last_char = std::nullopt;
     if (it != end) {
         const auto first_char = utf8::unchecked::next(it);
         if (first_char == U'!') {
@@ -100,7 +102,7 @@ bool range::empty() const {
     return map.empty();
 }
 
-std::optional<utf8::utfchar32_t> range::as_single_char() const {
+std::optional<char32_t> range::as_single_char() const {
     if (map.empty() && inverse) {
         return U'!';
     } 
