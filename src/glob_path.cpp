@@ -14,12 +14,12 @@ bool glob_path::matches(const fs_path& path) {
 
 glob_path::element glob_path::parse_path_element(std::string_view v) {
     if (v.empty()) {
-        return static_cast<std::string>(v);
+        return std::string();
     }
     if (v == "**") {
         return star {};
     }
-    auto g = glob::parse(v);
+    glob g = glob::parse(v);
     const auto str = g.as_single_string();
     if (str.has_value()) {
         return str.value();

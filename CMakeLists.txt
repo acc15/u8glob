@@ -27,6 +27,8 @@ add_library(u8glob
 target_include_directories(u8glob PUBLIC include)
 target_link_libraries(u8glob utf8::cpp)
 
+install(TARGETS u8glob)
+
 option(U8GLOB_TEST "Generate the test target." ${U8GLOB_ROOT})
 if (U8GLOB_TEST)
     add_subdirectory(test)
