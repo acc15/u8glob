@@ -16,29 +16,32 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+find_package(utf8cpp REQUIRED)
+
 set(INC include/u8glob)
 set(SRC src)
 
-# u8glob library configuration
-find_package(utf8cpp REQUIRED)
 add_library(u8glob
-    ${INC}/elements/star.hpp
-    ${INC}/elements/any.hpp
-    ${INC}/elements/range.hpp
-    ${SRC}/elements/range.cpp
-    ${INC}/match.hpp
-    ${INC}/glob.hpp
-    ${SRC}/glob.cpp
-    ${INC}/glob_path.hpp
+    ${SRC}/elements/range.cpp  
+    ${SRC}/glob.cpp  
     ${SRC}/glob_path.cpp
 )
 
-target_include_directories(u8glob PUBLIC include)
+target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES 
+    ${INC}/elements/star.hpp 
+    ${INC}/elements/any.hpp
+    ${INC}/elements/range.hpp 
+    ${INC}/match.hpp 
+    ${INC}/glob.hpp 
+    ${INC}/glob_path.hpp
+)
+
 target_link_libraries(u8glob utf8::cpp)
 
-install(TARGETS u8glob)
+include(GNUInstallDirs)
+install(TARGETS u8glob FILE_SET HEADERS)
 
-option(U8GLOB_TEST "Generate the test target." ${U8GLOB_ROOT})
+option(U8GLOB_TEST "Build tests" ${U8GLOB_ROOT})
 if(U8GLOB_TEST)
     add_subdirectory(test)
 endif()
