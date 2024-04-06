@@ -3,6 +3,7 @@ find_package(Catch2 REQUIRED)
 add_executable(u8glob_test 
     glob.cpp
     glob_path.cpp
+    elements/range.cpp
 )
 
 target_link_libraries(u8glob_test Catch2::Catch2WithMain u8glob)

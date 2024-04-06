@@ -3,6 +3,8 @@
 #include "u8glob/glob.hpp"
 #include "u8glob/match.hpp"
 
+namespace u8 = utf8::unchecked;
+
 namespace u8glob {
 
 glob::glob(const std::initializer_list<element>& v): elements(v) {
@@ -19,17 +21,17 @@ bool glob::matches(std::string_view sv) const {
         match_struct<std::string_view>& m;
 
         bool operator()(const star&) {
-            utf8::unchecked::next(m.cur);
+            u8::advance(m.cur, 1);
             return true;
         }
 
         bool operator()(const any&) {
-            utf8::unchecked::next(m.cur);
+            u8::advance(m.cur, 1);
             return true;
         }
 
         bool operator()(const range& r) {
-            return r.contains(utf8::unchecked::next(m.cur));
+            return r.contains(u8::next(m.cur));
         }
 
         bool operator()(const std::string& str) {
@@ -128,7 +130,7 @@ void glob::parse_self(std::string_view str) {
     const auto end = str.end();
     while (it != end) {
         const auto it_ch_begin = it;
-        const auto ch = utf8::unchecked::next(it);
+        const auto ch = u8::next(it);
         switch (ch) {
         case U'*': 
             if (elements.empty() || !is_star(elements.back())) {

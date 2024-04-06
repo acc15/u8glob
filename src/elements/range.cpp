@@ -2,6 +2,8 @@
 
 #include "u8glob/elements/range.hpp"
 
+namespace u8 = utf8::unchecked;
+
 namespace u8glob {
 
 void range::add(char32_t min, char32_t max) {
@@ -38,7 +40,7 @@ void range::parse(std::string_view::const_iterator& it, std::string_view::const_
     
     std::optional<char32_t> last_char = std::nullopt;
     if (it != end) {
-        const auto first_char = utf8::unchecked::next(it);
+        const auto first_char = u8::next(it);
         if (first_char == U'!') {
             inverse = true;
         } else {
@@ -48,7 +50,7 @@ void range::parse(std::string_view::const_iterator& it, std::string_view::const_
 
     bool in_char_range = false;
     while (it != end) {
-        const auto ch = utf8::unchecked::next(it);
+        const auto ch = u8::next(it);
         if (ch == U']') {
             break;
         }
@@ -82,20 +84,21 @@ void range::parse(std::string_view::const_iterator& it, std::string_view::const_
 }
 
 void range::stringify(std::string& result) const {
-    result.append(1, '[');
+    auto inserter = std::back_inserter(result);
+    *inserter = '[';
     if (inverse) {
-        result.append(1, '!');
+        *inserter = '!';
     }
     for (const auto& e: map) {
         if (e.first == e.second) {
-            utf8::unchecked::append(e.first, std::back_inserter(result));
-        } else {
-            utf8::unchecked::append(e.first, std::back_inserter(result));
-            result.append(1, '-');
-            utf8::unchecked::append(e.second, std::back_inserter(result));
+            u8::append(e.first, inserter);
+            continue;
         }
+        u8::append(e.first, inserter);
+        *inserter = '-';
+        u8::append(e.second, inserter);
     }
-    result.append(1, ']');
+    *inserter = ']';
 }
 
 bool range::empty() const {
