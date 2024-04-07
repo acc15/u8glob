@@ -37,7 +37,7 @@ target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
 
 target_include_directories(${PROJECT_NAME} PRIVATE deps/utfcpp/source)
 
-add_subdirectory(install)
+add_subdirectory(cmake)
 
 option(${PROJECT_NAME}_TEST "Build tests" ${${PROJECT_NAME}_ROOT})
 if(${PROJECT_NAME}_TEST)
