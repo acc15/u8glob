@@ -67,23 +67,6 @@ std::optional<std::string> glob::as_single_string() const {
     return std::nullopt;
 }
 
-void glob::escape(std::ostream& stream, std::string_view string) {
-    auto it = string.begin();
-    const auto end = string.end();
-    while (it != end) {
-        const auto it_start = it;
-        const auto ch = utf8::unchecked::next(it);
-        const bool escape = ch == U'*' || ch == U'?' || ch == U'[' || ch == U']';
-        const std::string_view char_view(it_start, it);
-        if (escape) {
-            stream << '[' << char_view << ']';
-        } else {
-            stream << char_view;
-        }
-    }
-}
-
-
 std::string& glob::last_string() {
     if (elements.empty() || !std::holds_alternative<std::string>(elements.back())) {
         elements.push_back(std::string());
@@ -136,7 +119,7 @@ std::ostream& operator<<(std::ostream& s, const glob& g) {
         std::ostream& stream;
         
         void operator()(const std::string& str) {
-            glob::escape(stream, str);
+            stream << glob::escape(str);
         }
 
         void operator()(const star&) { 
@@ -155,6 +138,23 @@ std::ostream& operator<<(std::ostream& s, const glob& g) {
         std::visit(v, e); 
     }
     return s;
+}
+
+std::ostream& operator<<(std::ostream& stream, const glob::escape& escape) {
+    auto it = escape.string.begin();
+    const auto end = escape.string.end();
+    while (it != end) {
+        const auto it_start = it;
+        const auto ch = utf8::unchecked::next(it);
+        const bool escape = ch == U'*' || ch == U'?' || ch == U'[' || ch == U']';
+        const std::string_view char_view(it_start, it);
+        if (escape) {
+            stream << '[' << char_view << ']';
+        } else {
+            stream << char_view;
+        }
+    }
+    return stream;
 }
 
 }

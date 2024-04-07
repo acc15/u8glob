@@ -28,7 +28,7 @@ public:
 
     std::optional<std::string> as_single_string() const;
 
-    static void escape(std::ostream& stream, std::string_view string);
+    struct escape { std::string_view string; };
 
 private:
     std::string& last_string();
@@ -38,5 +38,6 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& s, const glob& g);
+std::ostream& operator<<(std::ostream& s, const glob::escape& escape);
 
 }
