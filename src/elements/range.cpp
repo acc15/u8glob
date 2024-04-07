@@ -1,3 +1,5 @@
+#include <iterator>
+
 #include <utf8/unchecked.h>
 
 #include "u8glob/elements/range.hpp"
@@ -83,24 +85,6 @@ void range::parse(std::string_view::const_iterator& it, std::string_view::const_
     }
 }
 
-void range::stringify(std::string& result) const {
-    auto inserter = std::back_inserter(result);
-    *inserter = '[';
-    if (inverse) {
-        *inserter = '!';
-    }
-    for (const auto& e: map) {
-        if (e.first == e.second) {
-            u8::append(e.first, inserter);
-            continue;
-        }
-        u8::append(e.first, inserter);
-        *inserter = '-';
-        u8::append(e.second, inserter);
-    }
-    *inserter = ']';
-}
-
 bool range::empty() const {
     return map.empty();
 }
@@ -116,6 +100,25 @@ std::optional<char32_t> range::as_single_char() const {
         }
     }
     return std::nullopt;
+}
+
+std::ostream& operator<<(std::ostream& s, const range& r) {
+    auto inserter = std::ostreambuf_iterator(s);
+    *inserter = '[';
+    if (r.inverse) {
+        *inserter = '!';
+    }
+    for (const auto& e: r.map) {
+        if (e.first == e.second) {
+            u8::append(e.first, inserter);
+            continue;
+        }
+        u8::append(e.first, inserter);
+        *inserter = '-';
+        u8::append(e.second, inserter);
+    }
+    *inserter = ']';
+    return s;
 }
 
 }

@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <iterator>
+
 #include <utf8/unchecked.h>
 
 #include "u8glob/glob.hpp"
@@ -14,6 +17,10 @@ glob::glob(const element_vector& v): elements(v) {
 }
 
 glob::glob(element_vector&& v): elements(v) {
+}
+
+glob::glob(std::string_view string): elements() {
+    parse_self(string);
 }
 
 bool glob::matches(std::string_view sv) const {
@@ -60,63 +67,22 @@ std::optional<std::string> glob::as_single_string() const {
     return std::nullopt;
 }
 
-glob glob::parse(std::string_view str) {
-    glob result;
-    result.parse_self(str);
-    return result;
-}
-
-void glob::escape(std::string_view str, std::string& result) {
-    auto it = str.begin();
-    const auto end = str.end();
+void glob::escape(std::ostream& stream, std::string_view string) {
+    auto it = string.begin();
+    const auto end = string.end();
     while (it != end) {
         const auto it_start = it;
         const auto ch = utf8::unchecked::next(it);
         const bool escape = ch == U'*' || ch == U'?' || ch == U'[' || ch == U']';
+        const std::string_view char_view(it_start, it);
         if (escape) {
-            result.append(1, '[').append(it_start, it).append(1, ']');
+            stream << '[' << char_view << ']';
         } else {
-            result.append(it_start, it);
+            stream << char_view;
         }
     }
 }
 
-std::string glob::escape(std::string_view str) {
-    std::string result;
-    escape(str, result);
-    return result;
-}
-
-void glob::stringify(std::string& result) const {
-    struct stringify_visitor {
-        std::string& result;
-        
-        void operator()(const std::string& str) {
-            glob::escape(str, result); 
-        }
-
-        void operator()(const star&) { 
-            result.append(1, '*'); 
-        }
-
-        void operator()(const any&) { 
-            result.append(1, '?'); 
-        }
-
-        void operator()(const range& range) {
-            range.stringify(result);
-        }
-    } v = {result};
-    for (const auto& e: elements) {
-        std::visit(v, e); 
-    }
-}
-
-std::string glob::stringify() const {
-    std::string result;
-    stringify(result);
-    return result;
-}
 
 std::string& glob::last_string() {
     if (elements.empty() || !std::holds_alternative<std::string>(elements.back())) {
@@ -163,6 +129,32 @@ void glob::parse_range(std::string_view::const_iterator& it, std::string_view::c
     } else if (!r.empty()) {
         elements.push_back(std::move(r));
     }
+}
+
+std::ostream& operator<<(std::ostream& s, const glob& g) {
+    struct stringify_visitor {
+        std::ostream& stream;
+        
+        void operator()(const std::string& str) {
+            glob::escape(stream, str);
+        }
+
+        void operator()(const star&) { 
+            stream << '*';
+        }
+
+        void operator()(const any&) { 
+            stream << '?';
+        }
+
+        void operator()(const range& range) {
+            stream << range;
+        }
+    } v = {s};
+    for (const auto& e: g.elements) {
+        std::visit(v, e); 
+    }
+    return s;
 }
 
 }

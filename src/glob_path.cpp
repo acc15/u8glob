@@ -19,7 +19,7 @@ glob_path::element glob_path::parse_path_element(std::string_view v) {
     if (v == "**") {
         return star {};
     }
-    glob g = glob::parse(v);
+    glob g(v);
     const auto str = g.as_single_string();
     if (str.has_value()) {
         return str.value();

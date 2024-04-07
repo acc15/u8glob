@@ -4,12 +4,9 @@
 
 using namespace u8glob;
 
-TEST_CASE("range: stringify", "[range]") {
-    
-    range r = { {{U'A', U'Z'}}, true };
-
-    std::string str;
-    r.stringify(str);
-    REQUIRE( str == "[!A-Z]" );
-
+TEST_CASE("range: stream print", "[range]") {
+    std::stringstream s;
+    range r = {{{U'А', U'Я'}}, true};
+    s << r;
+    REQUIRE( s.str() == "[!А-Я]" );
 }

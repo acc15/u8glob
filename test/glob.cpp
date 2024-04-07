@@ -34,7 +34,7 @@ void test_elements(const glob::element_vector& actual, const glob::element_vecto
 
 void test_parse(std::string_view expr, const glob::element_vector& expected) {
     INFO("parsing glob: " << expr);
-    test_elements(glob::parse(expr).elements, expected);
+    test_elements(glob(expr).elements, expected);
 }
 
 glob make_star_glob(size_t star_count) {
@@ -142,13 +142,13 @@ TEST_CASE("glob: parse multiple consecutive stars", "[glob][parse]") {
 }
 
 TEST_CASE("glob: stringify", "[glob][stringify]") {
-    REQUIRE( glob { 
+    REQUIRE( (std::ostringstream() << glob { 
         star{}, 
         any{}, 
         range{ {{U'А', U'Я'}, {U'а', U'я'}, {U'a', U'a'}} },
         range{ {{U'a', U'c'}}, true },
         "abc*[]?", 
-    }.stringify() == "*?[aА-Яа-я][!a-c]abc[*][[][]][?]" );
+    }).str() == "*?[aА-Яа-я][!a-c]abc[*][[][]][?]" );
 }
 
 TEST_CASE("glob: match performance", "[glob][match][!benchmark]") {
