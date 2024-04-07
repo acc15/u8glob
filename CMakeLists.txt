@@ -16,7 +16,6 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(utf8cpp REQUIRED)
 add_library(${PROJECT_NAME})
 
 set(SRC src)
@@ -36,9 +35,9 @@ target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
     ${INC}/glob_path.hpp
 )
 
-target_link_libraries(${PROJECT_NAME} utf8::cpp)
+target_include_directories(${PROJECT_NAME} PRIVATE deps/utfcpp/source)
 
-add_subdirectory(cmake)
+add_subdirectory(install)
 
 option(${PROJECT_NAME}_TEST "Build tests" ${${PROJECT_NAME}_ROOT})
 if(${PROJECT_NAME}_TEST)
