@@ -69,7 +69,7 @@ std::optional<std::string> glob::as_single_string() const {
 
 std::string& glob::last_string() {
     if (elements.empty() || !std::holds_alternative<std::string>(elements.back())) {
-        elements.push_back(std::string());
+        elements.emplace_back(std::string());
     }
     return std::get<std::string>(elements.back());
 }
@@ -83,12 +83,12 @@ void glob::parse_self(std::string_view str) {
         switch (ch) {
         case U'*': 
             if (elements.empty() || !is_star(elements.back())) {
-                elements.push_back(star{});
+                elements.emplace_back(star{});
             }
             break;
 
         case U'?':
-            elements.push_back(any{});
+            elements.emplace_back(any{});
             break;
 
         case U'[':

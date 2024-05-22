@@ -40,10 +40,10 @@ void test_parse(std::string_view expr, const glob::element_vector& expected) {
 glob make_star_glob(size_t star_count) {
     glob g;
     for (size_t i = 0; i < star_count; i++) {
-        g.elements.push_back("a");
-        g.elements.push_back(star{});
+        g.elements.emplace_back("a");
+        g.elements.emplace_back(star{});
     }
-    g.elements.push_back("b");
+    g.elements.emplace_back("b");
     return g;
 }
 
