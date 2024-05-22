@@ -146,9 +146,9 @@ std::ostream& operator<<(std::ostream& stream, const glob::escape& escape) {
     while (it != end) {
         const auto it_start = it;
         const auto ch = utf8::unchecked::next(it);
-        const bool escape = ch == U'*' || ch == U'?' || ch == U'[' || ch == U']';
+        const bool is_esc = ch == U'*' || ch == U'?' || ch == U'[' || ch == U']';
         const std::string_view char_view(it_start, it);
-        if (escape) {
+        if (is_esc) {
             stream << '[' << char_view << ']';
         } else {
             stream << char_view;
