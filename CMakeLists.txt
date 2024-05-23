@@ -13,12 +13,14 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTING "Build tests" ${${PROJECT_VAR}_ROOT})
+option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(MSVC)
     add_compile_options(/W4 /WX /utf-8)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+
 
 add_library(${PROJECT_NAME})
 
