@@ -1,5 +1,11 @@
-build/
-.vscode/
 .cache/
 CMakeFiles/
 CMakeCache.txt
+
+# VS Code
+build/
+.vscode/
+
+# Visual Studio
+.vs/
+out/
