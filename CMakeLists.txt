@@ -16,7 +16,7 @@ option(BUILD_TESTING "Build tests" ${${PROJECT_VAR}_ROOT})
 option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Exports all symbols from library (Windows only)" ON)
 
 if(MSVC)
-    add_compile_options(/W4 /WX /utf-8)
+    add_compile_options(/W4 /WX /utf-8 /Zc:inline)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
