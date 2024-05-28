@@ -53,7 +53,7 @@ if(U8GLOB_INSTALL)
     set(PKG_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/u8glob-config.cmake)
     set(PKG_VERSION ${CMAKE_CURRENT_BINARY_DIR}/u8glob-config-version.cmake)
 
-    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in ${PKG_CONFIG} INSTALL_DESTINATION ${PKG_DIR})
+    configure_package_config_file(config.cmake.in ${PKG_CONFIG} INSTALL_DESTINATION ${PKG_DIR})
     write_basic_package_version_file(${PKG_VERSION} VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
 
     install(TARGETS u8glob EXPORT u8glob-targets LIBRARY FILE_SET HEADERS RUNTIME)
