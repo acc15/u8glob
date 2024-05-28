@@ -1,18 +1,11 @@
-cmake_minimum_required(VERSION 3.28.0)
+cmake_minimum_required(VERSION 3.29.3)
 project(u8glob VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-string(TOUPPER ${PROJECT_NAME} PROJECT_VAR)
-
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-  set(${PROJECT_VAR}_ROOT ON)
-else()
-  set(${PROJECT_VAR}_ROOT OFF)
-endif()
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(BUILD_TESTING "Build tests" ${${PROJECT_VAR}_ROOT})
+option(BUILD_TESTING "Build tests" ${PROJECT_IS_TOP_LEVEL})
 option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Exports all symbols from library (Windows only)" ON)
 
 if(MSVC)
