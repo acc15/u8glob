@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTING "Build tests" ${PROJECT_IS_TOP_LEVEL})
 option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Exports all symbols from library (Windows only)" ON)
+option(U8GLOB_INSTALL "Generate the install target." ON)
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Debug postfix")
 
 if(MSVC)
     add_compile_options(
@@ -21,18 +23,17 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
-add_library(${PROJECT_NAME})
+add_library(u8glob)
 
 set(SRC src)
-target_sources(${PROJECT_NAME} PRIVATE 
+target_sources(u8glob PRIVATE 
     ${SRC}/elements/range.cpp
     ${SRC}/glob.cpp
     ${SRC}/glob_path.cpp
 )
 
-set(INC include/${PROJECT_NAME})
-target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
+set(INC include/u8glob)
+target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
     ${INC}/match.hpp
     ${INC}/elements/star.hpp
     ${INC}/elements/any.hpp
@@ -41,9 +42,25 @@ target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
     ${INC}/glob_path.hpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE deps/utfcpp/source)
+target_include_directories(u8glob PRIVATE deps/utfcpp/source)
 
-add_subdirectory(cmake)
+if(U8GLOB_INSTALL)
+    include(GNUInstallDirs)
+    include(CMakePackageConfigHelpers)
+
+    set(PKG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/u8glob)
+    
+    set(PKG_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/u8glob-config.cmake)
+    set(PKG_VERSION ${CMAKE_CURRENT_BINARY_DIR}/u8glob-config-version.cmake)
+
+    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in ${PKG_CONFIG} INSTALL_DESTINATION ${PKG_DIR})
+    write_basic_package_version_file(${PKG_VERSION} VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
+
+    install(TARGETS u8glob EXPORT u8glob-targets LIBRARY FILE_SET HEADERS RUNTIME)
+    install(EXPORT u8glob-targets DESTINATION ${PKG_DIR} NAMESPACE u8glob::)
+    install(FILES ${PKG_VERSION} ${PKG_CONFIG} DESTINATION ${PKG_DIR})
+endif()
+
 if(BUILD_TESTING)
     
     find_package(Catch2 REQUIRED)
