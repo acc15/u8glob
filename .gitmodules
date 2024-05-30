@@ -1,3 +1,4 @@
 [submodule "deps/utfcpp"]
 	path = deps/utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
+	shallow = true
