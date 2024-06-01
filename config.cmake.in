@@ -2,4 +2,6 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/u8glob-targets.cmake")
 
+option(U8GLOB_AUTO_COPY_DLL "Enables automatic DLL copy to executable directory" ON)
+
 check_required_components(u8glob)
