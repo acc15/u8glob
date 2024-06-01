@@ -62,6 +62,9 @@ if(U8GLOB_INSTALL)
     install(TARGETS u8glob EXPORT u8glob-targets LIBRARY FILE_SET HEADERS RUNTIME)
     install(EXPORT u8glob-targets DESTINATION ${PKG_DIR} NAMESPACE u8glob::)
     install(FILES ${PKG_VERSION} ${PKG_CONFIG} DESTINATION ${PKG_DIR})
+
+    export(EXPORT u8glob-targets FILE "${CMAKE_CURRENT_BINARY_DIR}/u8glob-targets.cmake" NAMESPACE u8glob::)
+
 endif()
 
 if(BUILD_TESTING)

@@ -52,5 +52,6 @@ Following configurations are supported out-of-box using CMake Workflows
 Windows requires that DLL must be in the same dir with executable.
 u8glob will automatically copy installed DLL on use.
 
-This behavior may be disabled by setting `U8GLOB_AUTO_COPY_DLL` CMake Cache variable to `OFF`
+This behavior may be disabled by setting `U8GLOB_AUTO_COPY_DLL` CMake Cache variable to `OFF`.
+Note that this variable is available only on Windows
 
