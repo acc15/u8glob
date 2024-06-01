@@ -1,0 +1,12 @@
+{
+    "name": "fmt",
+    "version": "0.1.0",
+    "description": "Tiny library for glob matching with UTF-8 support",
+    "homepage": "https://github.com/acc15/u8glob",
+    "license": "MIT",
+    "dependencies": [
+        {
+            "name": "catch2"
+        }
+    ]
+}
