@@ -50,38 +50,19 @@ target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
 
 target_include_directories(u8glob PRIVATE deps/utfcpp/source)
 
-function(configure_install_pkgconfig target template install_dir)
-    configure_file(config.pc.in ${template} @ONLY)
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc"
-        INPUT ${template}
-        TARGET ${target}
-    )
-    install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc"
-        DESTINATION ${install_dir}
-    )
-endfunction()
-
 function(configure_install target)
     
-    string(TOUPPER ${target} TARGET)    
-    option(${TARGET}_INSTALL "Generate ${target} install" ON)
-
-    if(NOT ${TARGET}_INSTALL)
-        return()
-    endif()
-
     include(GNUInstallDirs)
     include(CMakePackageConfigHelpers)
 
-    set(cmake_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${target}")
-    set(cmake_config_file "${CMAKE_CURRENT_BINARY_DIR}/${target}-config.cmake")
-    set(cmake_version_file "${CMAKE_CURRENT_BINARY_DIR}/${target}-config-version.cmake")
-    set(cmake_targets "${target}-targets")
-    set(cmake_targets_file "${CMAKE_CURRENT_BINARY_DIR}/${cmake_targets}.cmake")
-    set(namespace "${target}::")
-    set(pkgconfig_template "${CMAKE_CURRENT_BINARY_DIR}/${target}.pc.in")
-    set(pkgconfig_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    set(cmake_dir ${CMAKE_INSTALL_LIBDIR}/cmake/${target})
+    set(cmake_config_file ${CMAKE_CURRENT_BINARY_DIR}/${target}-config.cmake)
+    set(cmake_version_file ${CMAKE_CURRENT_BINARY_DIR}/${target}-config-version.cmake)
+    set(cmake_targets ${target}-targets)
+    set(cmake_targets_file ${CMAKE_CURRENT_BINARY_DIR}/${cmake_targets}.cmake)
+    set(namespace ${target}::)
+    set(pkgconfig_template ${CMAKE_CURRENT_BINARY_DIR}/${target}.pc.in)
+    set(pkgconfig_dir ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
     get_target_property(version ${target} VERSION)
     if(NOT version)
@@ -94,7 +75,17 @@ function(configure_install target)
     install(EXPORT ${cmake_targets} DESTINATION ${cmake_dir} NAMESPACE ${namespace})
     install(FILES ${cmake_config_file} ${cmake_version_file} DESTINATION ${cmake_dir})
     export(EXPORT ${cmake_targets} FILE ${cmake_targets_file} NAMESPACE ${namespace})
-    configure_install_pkgconfig(${target} ${pkgconfig_template} ${pkgconfig_dir})
+
+    configure_file(config.pc.in ${pkgconfig_template} @ONLY)
+    file(GENERATE 
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
+        INPUT ${pkgconfig_template}
+        TARGET ${target}
+    )
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
+        DESTINATION ${pkgconfig_dir}
+    )
 
 endfunction()
 
