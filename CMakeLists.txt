@@ -50,45 +50,7 @@ target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
 
 target_include_directories(u8glob PRIVATE deps/utfcpp/source)
 
-function(configure_install target)
-    
-    include(GNUInstallDirs)
-    include(CMakePackageConfigHelpers)
-
-    set(cmake_dir ${CMAKE_INSTALL_LIBDIR}/cmake/${target})
-    set(cmake_config_file ${CMAKE_CURRENT_BINARY_DIR}/${target}-config.cmake)
-    set(cmake_version_file ${CMAKE_CURRENT_BINARY_DIR}/${target}-config-version.cmake)
-    set(cmake_targets ${target}-targets)
-    set(cmake_targets_file ${CMAKE_CURRENT_BINARY_DIR}/${cmake_targets}.cmake)
-    set(namespace ${target}::)
-    set(pkgconfig_template ${CMAKE_CURRENT_BINARY_DIR}/${target}.pc.in)
-    set(pkgconfig_dir ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-
-    get_target_property(version ${target} VERSION)
-    if(NOT version)
-        set(version ${PROJECT_VERSION})
-    endif()
-
-    configure_package_config_file(config.cmake.in ${cmake_config_file} INSTALL_DESTINATION ${cmake_dir})    
-    write_basic_package_version_file(${cmake_version_file} VERSION ${version} COMPATIBILITY ExactVersion)
-    install(TARGETS ${target} EXPORT ${cmake_targets} LIBRARY FILE_SET HEADERS RUNTIME)
-    install(EXPORT ${cmake_targets} DESTINATION ${cmake_dir} NAMESPACE ${namespace})
-    install(FILES ${cmake_config_file} ${cmake_version_file} DESTINATION ${cmake_dir})
-    export(EXPORT ${cmake_targets} FILE ${cmake_targets_file} NAMESPACE ${namespace})
-
-    configure_file(config.pc.in ${pkgconfig_template} @ONLY)
-    file(GENERATE 
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
-        INPUT ${pkgconfig_template}
-        TARGET ${target}
-    )
-    install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
-        DESTINATION ${pkgconfig_dir}
-    )
-
-endfunction()
-
+include(cmake/helpers/install.cmake)
 configure_install(u8glob)
 
 if(BUILD_TESTING)
