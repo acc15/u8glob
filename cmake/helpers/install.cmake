@@ -11,7 +11,12 @@ function(configure_install)
     set(cmake_targets_file ${CMAKE_CURRENT_BINARY_DIR}/${cmake_targets}.cmake)
     set(namespace ${PROJECT_NAME}::)
 
-    configure_package_config_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/config.cmake.in ${cmake_config_file} INSTALL_DESTINATION ${cmake_dir})
+    configure_dll_autocopy(${cmake_dir})
+
+    configure_package_config_file(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/config.cmake.in ${cmake_config_file}
+        INSTALL_DESTINATION ${cmake_dir})
+
     write_basic_package_version_file(${cmake_version_file} VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
     install(TARGETS "${targets}" EXPORT ${cmake_targets} LIBRARY FILE_SET HEADERS RUNTIME)
     install(EXPORT ${cmake_targets} DESTINATION ${cmake_dir} NAMESPACE ${namespace})
@@ -19,53 +24,62 @@ function(configure_install)
     export(EXPORT ${cmake_targets} FILE ${cmake_targets_file} NAMESPACE ${namespace})
 
     foreach(target "${targets}")
-        generate_pkgconfig(${target})
+        get_target_property(target_type ${target} TYPE)
+        if(${target_type} STREQUAL SHARED_LIBRARY OR ${target_type} STREQUAL STATIC_LIBRARY)
+            generate_pkgconfig(${target})
+        endif()
     endforeach()
 
 endfunction()
 
-function(generate_pkgconfig target)
+function(configure_dll_autocopy cmake_dir)
+    option(DLL_AUTOCOPY "Automatically copies binary to dependent executables" ${WIN32})
+
+    if(NOT DLL_AUTOCOPY)
+        return()
+    endif()
+
+    set(dll_targets "")
+    foreach(target "${targets}")
+        get_target_property(target_type ${target} TYPE)
+        if(${target_type} STREQUAL SHARED_LIBRARY)
+            string(APPEND dll_targets " ${namespace}${target}")
+        endif()
+    endforeach()
+
+    if(NOT dll_targets)
+        return()
+    endif()
+
+    set(support_file "bincopy.cmake")
+
+    file(COPY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${support_file} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     
+    string(CONCAT script
+        "# DLL autocopy support\n"
+        "include(\${CMAKE_CURRENT_LIST_DIR}/${support_file})\n"
+        "cmake_language(DEFER CALL copy_bin_to_executables${dll_targets})\n")
+    set(DLL_AUTOCOPY_INIT ${script} PARENT_SCOPE)
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${support_file} DESTINATION ${cmake_dir})
+    
+endfunction()
+
+function(generate_pkgconfig target)
     set(pkgconfig_template ${CMAKE_CURRENT_BINARY_DIR}/${target}.pc.in)
     set(pkgconfig_dir ${CMAKE_INSTALL_LIBDIR}/pkgconfig)    
-
     configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/config.pc.in ${pkgconfig_template} @ONLY)
-    
     file(GENERATE 
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
         INPUT ${pkgconfig_template}
         TARGET ${target}
     )
-
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_LINKER_FILE_BASE_NAME:${target}>.pc
         DESTINATION ${pkgconfig_dir}
     )
-
 endfunction()
 
-function(copy_dll_to_target_dir dll_target target)
-    add_custom_command(
-        TARGET ${target}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-            $<TARGET_FILE:${dll_target}> 
-            $<TARGET_FILE_DIR:${target}>
-    )
-endfunction()
-
-function(copy_dll_to_executables dll_target) 
-    get_directory_property(dir_targets BUILDSYSTEM_TARGETS)
-    foreach(target "${dir_targets}")
-        get_target_property(target_type ${target} TYPE)
-        if(target_type STREQUAL EXECUTABLE)
-            get_target_property(target_libs ${target} LINK_LIBRARIES)
-            if(${dll_target} IN_LIST target_libs)
-                copy_dll_to_target_dir(${dll_target} ${target})
-            endif()
-        endif()
-    endforeach()
-endfunction()
 
 
 
