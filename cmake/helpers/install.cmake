@@ -33,8 +33,8 @@ function(configure_install)
 endfunction()
 
 function(configure_dll_autocopy cmake_dir)
-    option(DLL_AUTOCOPY "Automatically copies binary to dependent executables" ${WIN32})
-
+    set(support_file "dll_autocopy.cmake")
+    include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${support_file})
     if(NOT DLL_AUTOCOPY)
         return()
     endif()
@@ -43,7 +43,7 @@ function(configure_dll_autocopy cmake_dir)
     foreach(target "${targets}")
         get_target_property(target_type ${target} TYPE)
         if(${target_type} STREQUAL SHARED_LIBRARY)
-            string(APPEND dll_targets " ${namespace}${target}")
+            LIST(APPEND dll_targets "${namespace}${target}")
         endif()
     endforeach()
 
@@ -51,14 +51,13 @@ function(configure_dll_autocopy cmake_dir)
         return()
     endif()
 
-    set(support_file "bincopy.cmake")
 
     file(COPY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${support_file} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     
     string(CONCAT script
         "# DLL autocopy support\n"
         "include(\${CMAKE_CURRENT_LIST_DIR}/${support_file})\n"
-        "cmake_language(DEFER CALL copy_bin_to_executables${dll_targets})\n")
+        "cmake_language(DEFER CALL copy_dlls_to_executable_dirs \"${dll_targets}\")\n")
     set(DLL_AUTOCOPY_INIT ${script} PARENT_SCOPE)
 
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${support_file} DESTINATION ${cmake_dir})

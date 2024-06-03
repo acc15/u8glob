@@ -5,14 +5,9 @@ project(u8glob
     HOMEPAGE_URL "https://github.com/acc15/u8glob"
     LANGUAGES CXX)
 
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(BUILD_TESTING "Build tests" ${PROJECT_IS_TOP_LEVEL})
-option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Exports all symbols from library (Windows only)" ON)
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Debug postfix")
-
 if(MSVC)
     add_compile_options(
         /W4 # Enable informational warnings (1-4 level)
@@ -28,6 +23,11 @@ if(MSVC)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(BUILD_TESTING "Build tests" ${PROJECT_IS_TOP_LEVEL})
+option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Exports all symbols from library (Windows only)" ON)
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Debug postfix")
 
 add_library(u8glob)
 
