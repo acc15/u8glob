@@ -2,3 +2,6 @@
 	path = deps/utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
 	shallow = true
+[submodule "cmake"]
+	path = cmake
+	url = https://github.com/acc15/cmake-helpers.git
