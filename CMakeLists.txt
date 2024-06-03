@@ -5,24 +5,8 @@ project(u8glob
     HOMEPAGE_URL "https://github.com/acc15/u8glob"
     LANGUAGES CXX)
 
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if(MSVC)
-    add_compile_options(
-        /W4 # Enable informational warnings (1-4 level)
-        /WX # Treat warnings as errors
-        /utf-8 # Enable UTF-8 support
-        /Zc:wchar_t # wchar_t as builtin type
-        /Zc:forScope # Removes possibility to use out of scope loop variables
-        
-        # Removes unreferenced data or functions that are COMDATs, or that only have internal linkage. 
-        # Greatly reduces binary size
-        /Zc:inline
-    )
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+include(cmake/helpers.cmake)
+configure_compilers()
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTING "Build tests" ${PROJECT_IS_TOP_LEVEL})
@@ -49,8 +33,6 @@ target_sources(u8glob PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
 )
 
 target_include_directories(u8glob PRIVATE deps/utfcpp/source)
-
-include(cmake/helpers/install.cmake)
 configure_install(u8glob)
 
 if(BUILD_TESTING)
