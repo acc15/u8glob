@@ -1,8 +1,8 @@
 #!/bin/bash
 
-build_dir="build/$1"
+export BINARY_DIR="build/install"
 sudo=$(command -v sudo || echo "")
-rm -rf "$build_dir"
+rm -rf "$BINARY_DIR"
 cmake --workflow --preset $1
-$sudo cmake --install "$build_dir" --config Debug
-$sudo cmake --install "$build_dir" --config Release
+$sudo cmake --install "$BINARY_DIR" --config Debug
+$sudo cmake --install "$BINARY_DIR" --config Release
