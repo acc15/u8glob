@@ -28,7 +28,10 @@ public:
 
     std::optional<std::string> as_single_string() const;
 
-    struct escape { std::string_view string; };
+    struct escape {
+        escape(std::string_view string);
+        std::string_view string; 
+    };
 
 private:
     std::string& last_string();

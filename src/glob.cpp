@@ -140,6 +140,8 @@ std::ostream& operator<<(std::ostream& s, const glob& g) {
     return s;
 }
 
+glob::escape::escape(std::string_view string): string(string) {}
+
 std::ostream& operator<<(std::ostream& stream, const glob::escape& escape) {
     auto it = escape.string.begin();
     const auto end = escape.string.end();

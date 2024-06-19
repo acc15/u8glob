@@ -37,16 +37,6 @@ void test_parse(std::string_view expr, const glob::element_vector& expected) {
     test_elements(glob(expr).elements, expected);
 }
 
-glob make_star_glob(size_t star_count) {
-    glob g;
-    for (size_t i = 0; i < star_count; i++) {
-        g.elements.emplace_back("a");
-        g.elements.emplace_back(star{});
-    }
-    g.elements.emplace_back("b");
-    return g;
-}
-
 TEST_CASE("glob: not matches", "[glob][match]") {
     REQUIRE_FALSE( glob { star{},  "abc" }.matches("xaaabcaabcx") );
 }
@@ -154,9 +144,13 @@ TEST_CASE("glob: stringify", "[glob][stringify]") {
 TEST_CASE("glob: match performance", "[glob][match][!benchmark]") {
     for (size_t star_count = 0; star_count < 40; star_count++) {
 
-        // TODO strange GCC bug: try to inline this function and build with Release configuration
-        // a lot of - `may be used uninitialized` warnings
-        glob g = make_star_glob(star_count);
+        glob g;
+        for (size_t i = 0; i < star_count; i++) {
+            g.elements.emplace_back("a");
+            g.elements.emplace_back(star{});
+        }
+        g.elements.emplace_back("b");
+
         std::string str(star_count, 'a');
 
         const auto t_start = std::chrono::high_resolution_clock::now();
